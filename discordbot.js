@@ -1,3 +1,5 @@
+const config = require("./config.js");
+const mrDecisionBot = require("./mrDecisionBot.js");
 const { Client, GatewayIntentBits } = require("discord.js");
 const client = new Client({
   intents: [
@@ -8,14 +10,12 @@ const client = new Client({
   ],
 });
 
-const config = require("./config.js");
 client.login(config.discord_token);
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`);
 });
 
-const mrDecisionBot = require("./mrDecisionBot.js");
 client.on("messageCreate", (msg) => {
   /* Discord wrapper */
   let reply = mrDecisionBot.discord(msg.content);
