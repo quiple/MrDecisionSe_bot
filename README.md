@@ -1,11 +1,3 @@
-# 김결정 봇 Second Edtion
+# 다시 돌아온 김결정
 
-기존의 김결정 봇이 동작하지 않는 관계로 Second Edtion 을 만들었습니다.
-
-Original은 <https://github.com/jaewoongh/telegram-bots>에서 확인하실 수 있습니다.
-
-# 돌아온김결정 (@MrDecisionSE_bot)
-
-[친구 추가하기](https://telegram.me/MrDecisionSE_bot)
-
-- 관련 문의사항은 [GitHub Issue](https://github.com/studionabu/MrDecisionSe_bot/issues)에 남겨주시면 감사하겠습니다.
+현재 Discord만 지원합니다. [내 서버에 초대하기](https://discord.com/api/oauth2/authorize?client_id=1197063791846883390&permissions=2048&scope=bot)
