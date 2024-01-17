@@ -17,7 +17,7 @@ client.on("ready", () => {
 
 const mrDecisionBot = require("./mrDecisionBot.js");
 client.on("messageCreate", (msg) => {
-  /* discord wrapper */
+  /* Discord wrapper */
   let reply = mrDecisionBot.discord(msg.content);
   if (reply !== null) {
     console.log(reply);
