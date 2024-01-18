@@ -73,6 +73,7 @@ const keywordList = [
   { keyword: /(\S+)야\s?되냐/, behavior: "pickOne", parameter: ["$야지", "$지 마", "$야 돼", "안 $도 돼", "$야 돼", "$지 말든지"] },
   { keyword: /(\S+)야\s?하냐/, behavior: "pickOne", parameter: ["$야지", "$지 마", "$야 돼", "안 $도 돼", "$야 돼", "$지 말든지"] },
   { keyword: /(\S+)야\s?될까/, behavior: "pickOne", parameter: ["$야지", "$지 마", "$야 돼", "안 $도 돼", "$야 돼", "$지 말든지"] },
+  { keyword: /(\S+)야\s?할까/, behavior: "pickOne", parameter: ["$야지", "$지 마", "$야 돼", "안 $도 돼", "$야 돼", "$지 말든지"] },
   { keyword: /(\S+)야겠지\?/, behavior: "pickOne", parameter: ["$야지", "$지 마", "$야 돼", "안 $도 돼", "$야 돼", "$지 말든지"] },
   { keyword: /(\S+)도\s?돼\?/, behavior: "pickOne", parameter: ["돼", "안 돼", "$도 돼", "$면 안 되지", "$든지", "ㄴㄴ"] },
   { keyword: /(\S+)도\s?됨\?/, behavior: "pickOne", parameter: ["돼", "안 돼", "$도 돼", "$면 안 되지", "$든지", "ㄴㄴ"] },
