@@ -1,6 +1,13 @@
-const { Yongeon, Eomi } = require("eomi-js");
-const { V, E } = require("eomi-js");
-const { Analyzer } = require("eomi-js");
+const Hangul = require("hangul-js");
+const { V, E, Analyzer } = require("eomi-js");
+
+const positive = ["ㅏ", "ㅑ", "ㅗ", "ㅛ", "ㅘ"];
+const verbs = [];
+const ends = [
+  new E("(아/어)"),
+  new E("ㄹ까", "을까"),
+  new E("냐"),
+];
 
 const explicitCommands = [
   { command: /^(?:김결정|결정아|김결쩡|깅결정|김결전|김경절|심결정|김굘정|김경정|김경전|김결잔|긴결정|긴결전|긴경정|긴경절)!+\s?/, behavior: "customPick" },
@@ -21,207 +28,9 @@ const fallbackTexts = [
   "나한테 왜 자꾸 이래?",
 ];
 
-// 예외만 남기고 Fallback 처리 필요
-const verbs = [
-  new Yongeon("가다", "가"),
-  new Yongeon("갑다", "가워"),
-  new Yongeon("걸다", "걸어"),
-  new Yongeon("곱다", "고와"),
-  new Yongeon("굴다", "굴어"),
-  // new Yongeon("그다", "가"),
-  new Yongeon("잠그다", "잠가"),
-  new Yongeon("잠그다", "잠궈"),
-  new Yongeon("긋다", "그어"),
-  new Yongeon("기다", "기어"),
-  new Yongeon("끊기다", "끊겨"),
-  new Yongeon("잠기다", "잠겨"),
-  new Yongeon("꾸다", "꿔"),
-  new Yongeon("바꾸다", "바꿔"),
-  new Yongeon("뀌다", "뀌어"),
-  new Yongeon("뀌다", "껴"),
-  new Yongeon("바뀌다", "바뀌어"),
-  new Yongeon("바뀌다", "바껴"),
-  new Yongeon("끊다", "끊어"),
-  new Yongeon("끓다", "끓어"),
-  new Yongeon("잠기다", "잠겨"),
-  new Yongeon("꺾다", "꺾어"),
-  new Yongeon("끄다", "꺼"),
-  new Yongeon("나다", "나"),
-  new Yongeon("덧나다", "덧나"),
-  new Yongeon("날다", "날아"),
-  new Yongeon("낳다", "낳아"),
-  new Yongeon("네모낳다", "네모나"),
-  new Yongeon("세모낳다", "세모나"),
-  new Yongeon("내다", "내"),
-  // new Yongeon("너다", "너"),
-  new Yongeon("건너다", "건너"),
-  new Yongeon("널다", "널어"),
-  new Yongeon("넣다", "넣어"),
-  new Yongeon("놀다", "놀아"),
-  new Yongeon("누다", "눠"),
-  new Yongeon("눕다", "누워"),
-  new Yongeon("닫다", "닫아"),
-  new Yongeon("닫다", "닫어"),
-  new Yongeon("달다", "달아"),
-  new Yongeon("달다", "달어"),
-  new Yongeon("담다", "담아"),
-  new Yongeon("담다", "담어"),
-  new Yongeon("닿다", "닿아"),
-  new Yongeon("대다", "대"),
-  new Yongeon("되다", "돼"),
-  new Yongeon("듣다", "들어"),
-  new Yongeon("들다", "들어"),
-  new Yongeon("건들다", "건드려"),
-  new Yongeon("흔들다", "흔들어"),
-  // new Yongeon("랗다", "래"),
-  new Yongeon("동그랗다", "동그래"),
-  // new Yongeon("렇다", "래"),
-  new Yongeon("그렇다", "그래"),
-  new Yongeon("둥그렇다", "둥그래"),
-  // new Yongeon("르다", "라"),
-  new Yongeon("고르다", "골라"),
-  new Yongeon("고르다", "골러"),
-  new Yongeon("구르다", "굴러"),
-  new Yongeon("기르다", "길러"),
-  new Yongeon("누르다", "눌러"),
-  new Yongeon("다르다", "달라"),
-  new Yongeon("다르다", "달러"),
-  new Yongeon("들르다", "들러"),
-  new Yongeon("따르다", "따라"),
-  new Yongeon("따르다", "따러"),
-  new Yongeon("마르다", "말라"),
-  new Yongeon("마르다", "말러"),
-  new Yongeon("모르다", "몰라"),
-  new Yongeon("모르다", "몰러"),
-  new Yongeon("바르다", "발라"),
-  new Yongeon("바르다", "발러"),
-  new Yongeon("빠르다", "빨라"),
-  new Yongeon("빠르다", "빨러"),
-  new Yongeon("부르다", "불러"),
-  new Yongeon("오르다", "올라"),
-  new Yongeon("이르다", "일러"),
-  new Yongeon("일르다", "일러"),
-  new Yongeon("치르다", "치러"),
-  new Yongeon("푸르다", "푸르러"),
-  new Yongeon("흐르다", "흘러"),
-  // new Yongeon("리다", "려"),
-  new Yongeon("들리다", "들려"),
-  new Yongeon("때리다", "때려"),
-  new Yongeon("벌리다", "벌려"),
-  new Yongeon("뿌리다", "뿌려"),
-  new Yongeon("살리다", "살려"),
-  new Yongeon("흐리다", "흐려"),
-  new Yongeon("말다", "마"),
-  new Yongeon("말다", "말아"),
-  new Yongeon("맑다", "맑아"),
-  new Yongeon("맞다", "맞아"),
-  new Yongeon("맞다", "맞어"),
-  new Yongeon("맣다", "매"),
-  new Yongeon("매다", "매"),
-  new Yongeon("먹다", "먹어"),
-  new Yongeon("메다", "메"),
-  new Yongeon("묵다", "묵어"),
-  new Yongeon("묶다", "묶어"),
-  new Yongeon("물다", "물어"),
-  new Yongeon("벌다", "벌어"),
-  new Yongeon("베다", "베"),
-  new Yongeon("보다", "봐"),
-  new Yongeon("붙다", "붙어"),
-  new Yongeon("빌다", "빌어"),
-  new Yongeon("빨다", "빨아"),
-  new Yongeon("빻다", "빻아"),
-  new Yongeon("빼다", "빼"),
-  new Yongeon("사다", "사"),
-  new Yongeon("살다", "살아"),
-  new Yongeon("서다", "서"),
-  new Yongeon("섞다", "섞어"),
-  new Yongeon("세다", "세"),
-  new Yongeon("수다", "숴"),
-  new Yongeon("쉬다", "쉬어"),
-  new Yongeon("쉬다", "셔"),
-  new Yongeon("숨쉬다", "숨쉬어"),
-  new Yongeon("숨쉬다", "숨셔"),
-  new Yongeon("시다", "셔"),
-  new Yongeon("싫다", "싫어"),
-  new Yongeon("심다", "심어"),
-  new Yongeon("싸다", "싸"),
-  new Yongeon("쌓다", "쌓아"),
-  new Yongeon("쎄다", "쎄"),
-  new Yongeon("쏘다", "쏴"),
-  new Yongeon("쓰다", "써"),
-  new Yongeon("애다", "애"),
-  new Yongeon("없다", "없어"),
-  new Yongeon("열다", "열어"),
-  new Yongeon("오다", "와"),
-  new Yongeon("우다", "워"),
-  new Yongeon("울다", "울어"),
-  new Yongeon("웃다", "웃어"),
-  // new Yongeon("으다", "아"),
-  new Yongeon("모으다", "모아"),
-  // new Yongeon("이다", "여"),
-  new Yongeon("끓이다", "끓여"),
-  new Yongeon("높이다", "높여"),
-  new Yongeon("놓이다", "놓여"),
-  new Yongeon("먹이다", "먹여"),
-  new Yongeon("모이다", "모여"),
-  new Yongeon("벌이다", "벌려"),
-  new Yongeon("보이다", "보여"),
-  new Yongeon("붙이다", "붙여"),
-  new Yongeon("섞이다", "섞여"),
-  new Yongeon("숙이다", "숙여"),
-  new Yongeon("쌓이다", "쌓여"),
-  new Yongeon("쓰이다", "쓰여"),
-  new Yongeon("죽이다", "죽여"),
-  new Yongeon("기죽이다", "기죽여"),
-  new Yongeon("줄이다", "줄여"),
-  new Yongeon("읽다", "읽어"),
-  new Yongeon("입다", "입어"),
-  new Yongeon("있다", "있어"),
-  new Yongeon("자다", "잡아"),
-  new Yongeon("접다", "접어"),
-  new Yongeon("졸다", "졸아"),
-  new Yongeon("좋다", "좋아"),
-  new Yongeon("주다", "줘"),
-  new Yongeon("죽다", "죽어"),
-  new Yongeon("기죽다", "기죽어"),
-  new Yongeon("지다", "져"),
-  new Yongeon("만지다", "만져"),
-  new Yongeon("짜다", "짜"),
-  new Yongeon("찌다", "쪄"),
-  new Yongeon("찍다", "찍어"),
-  new Yongeon("차다", "차"),
-  new Yongeon("추다", "춰"),
-  new Yongeon("치다", "쳐"),
-  new Yongeon("캐다", "캐"),
-  new Yongeon("켜다", "켜"),
-  // new Yongeon("퀴다", "퀴어"),
-  new Yongeon("할퀴다", "할퀴어"),
-  new Yongeon("할퀴다", "할켜"),
-  new Yongeon("키다", "켜"),
-  new Yongeon("타다", "타"),
-  new Yongeon("팔다", "팔아"),
-  new Yongeon("팔다", "팔어"),
-  new Yongeon("풀다", "풀어"),
-  new Yongeon("펴다", "펴"),
-  new Yongeon("피다", "펴"),
-  new Yongeon("하다", "해"),
-  new Yongeon("핥다", "핥아"),
-  // new Yongeon("히다", "혀"),
-  new Yongeon("괴롭히다", "괴롭혀"),
-];
-
-const ends = [
-  new Eomi("(아/어)"),
-  new Eomi("ㄹ까", "을까"),
-  new Eomi("냐"),
-];
-
 const keywordList = [
   { // 해 말아
     keyword: /(\S+)\s?(?:말아|말어)(?:\?|\S*$)/, behavior: "pickOne", parameter: [
-      "(아/어)", "지 말어",
-      "자", "지 말자",
-      "(아/어)라", "지 마",
       "(아/어)", "지 마",
       "(아/어)", "지 마",
       "자", "지 말자",
@@ -315,17 +124,52 @@ const keywordList2 = [
   { keyword: /(\S+)도\s?될까(?:\?|\S*$)/, behavior: "pickOne", parameter: ["돼", "안 돼", "$도 돼", "$면 안 되지", "$든지", "ㄴㄴ"] },
 ];
 
-const analyzer = new Analyzer(verbs, ends);
+const verb = function (a, b) {
+  verbs.push(new V(a, b));
+}
 
 const behaviors = {
   pickOne: function (matchResult, list) {
     let tmpResult = {};
+    let response = list[Math.floor(Math.random() * list.length)];
     tmpResult.q = matchResult.input;
-    let response = matchResult[1]
-      ? analyzer.analyze(matchResult[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
-      : list[Math.floor(Math.random() * list.length)];
+    if (matchResult[1]) {
+      let term = matchResult[1].slice(0, -2);
+      let check = (char) => matchResult[1].endsWith(char);
+      switch (true) {
+        case ["가냐", "가", "갈까"].some(check): verb(term + "가다", term + "가"); break;
+        case ["같냐", "같아", "같을까"].some(check): verb(term + "같다", term + "같아"); break;
+        case ["나냐", "나", "날까"].some(check): verb(term + "나다", term + "나"); break;
+        case ["라냐", "라", "랄까"].some(check): verb(term + "라다", term + "라"); break;
+        case ["마냐", "말아", "말까"].some(check): verb(term + "말다", term + "말아"); break;
+        case ["사냐", "사", "살까"].some(check): verb(term + "사다", term + "사"); break;
+        case ["싸냐", "싸", "쌀까"].some(check): verb(term + "싸다", term + "싸"); break;
+        case ["자냐", "자", "잘까"].some(check): verb(term + "자다", term + "자"); break;
+        case ["차냐", "차", "찰까"].some(check): verb(term + "차다", term + "차"); break;
+        case ["타냐", "타", "탈까"].some(check): verb(term + "타다", term + "타"); break;
+        case ["파냐", "팔아", "팔까"].some(check): verb(term + "팔다", term + "팔아"); break;
+        case ["하냐", "해", "할까"].some(check): verb(term + "하다", term + "해"); break;
+        case ["거냐", "걸어", "걸까"].some(check): verb(term + "걸다", term + "걸어"); break;
+        case ["서냐", "서", "설까"].some(check): verb(term + "서다", term + "서"); break;
+        case ["두냐", "둬", "둘까"].some(check): verb(term + "두다", term + "둬"); break;
+        case ["수냐", "숴", "술까"].some(check): verb(term + "수다", term + "숴"); break;
+        case ["우냐", "워", "울까"].some(check): verb(term + "우다", term + "워"); break;
+        case ["죽냐", "죽어", "죽을까"].some(check): verb(term + "죽다", term + "죽어"); break;
+        case ["퀴냐", "퀴어", "퀼까"].some(check): verb(term + "퀴다", term + "퀴어"); break;
+        case ["그냐", "가", "거", "글까"].some(check): verb(term + "그다", term + (positive.includes(Hangul.d(term).pop()) ? "가" : "거")); break;
+        case ["르냐", "라", "러", "를까"].some(check): verb(term + "르다", (Hangul.endsWithConsonant(term) ? term : Hangul.a(term + "ㄹ")) + (positive.includes(Hangul.d(term).pop()) ? "라" : "러")); break;
+        case ["기냐", "겨", "길까"].some(check): verb(term + "기다", term + "겨"); break;
+        case ["리냐", "려", "릴까"].some(check): verb(term + "리다", term + "려"); break;
+        case ["이냐", "여", "일까"].some(check): verb(term + "이다", term + "여"); break;
+        case ["지냐", "져", "질까"].some(check): verb(term + "지다", term + "져"); break;
+        case ["히냐", "혀", "힐까"].some(check): verb(term + "히다", term + "혀"); break;
+
+        case ["으냐", "을까"].some(check): verb(term + "으다", term + (positive.includes(Hangul.d(term).pop()) ? "아" : "어")); break;
+        default: break;
+      }
+      response = new Analyzer(verbs, ends).analyze(matchResult[1])[0][0]._(list[Math.floor(Math.random() * list.length)]);
+    }
     tmpResult.a = response;
-    // tmpResult.a = (matchResult[1]);
     return tmpResult;
   },
 
@@ -395,7 +239,7 @@ const mrDecisionBot = {
     return checkKeywordAndGetResponse(content);
   },
   helpMessage:
-    '돌아온 김결정이다.\n말이 많진 않지만 결정적인 순간에 한마디 하는 성격이다.\n귀찮으니깐 웬만하면 말 걸지 마라.\n꼭 내가 결정해야겠는 일이 있으면 "김결정! 부먹 찍먹 중립" 이런 식으로 물어보도록.\n잘 부탁한다.',
+    "돌아온 김결정이다.\n말이 많진 않지만 결정적인 순간에 한마디 하는 성격이다.\n귀찮으니깐 웬만하면 말 걸지 마라.\n꼭 내가 결정해야겠는 일이 있으면 \"김결정! 부먹 찍먹 중립\" 이런 식으로 물어보도록.\n잘 부탁한다.",
   aboutText: "https://twitter.com/MrDecision_bot",
 };
 
