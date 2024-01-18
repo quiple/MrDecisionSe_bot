@@ -818,7 +818,7 @@ const irregularTable = [
   /* $도 */ { pattern: /겨든지$/, fix: "기든지" },
 
   /* ..지다 */
-  /* $냐 */ { pattern: /[^야]지$/, fix: "져" },
+  /* $냐 */ { pattern: /(?<![야되든])지$/, fix: "져" },
   /* $냐 */ { pattern: /지라$/, fix: "져라" },
   /* $까 */ { pattern: /질$/, fix: "져" },
   /* $까 */ { pattern: /질자$/, fix: "지자" },
