@@ -1155,11 +1155,11 @@ const behaviors = {
       options = optionText.split(" ");
     }
     if (options.length <= 1) {
-      //          return fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
+      // return fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
       tmpResult.a = fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
       return tmpResult;
     }
-    //        return options[Math.floor(Math.random() * options.length)].trim();
+    // return options[Math.floor(Math.random() * options.length)].trim();
     tmpResult.a = options[Math.floor(Math.random() * options.length)].trim();
     return tmpResult;
   },
@@ -1167,7 +1167,7 @@ const behaviors = {
   fallback: function (matchResult) {
     let tmpResult = {};
     tmpResult.q = matchResult.input;
-    //      return fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
+    // return fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
     tmpResult.a = fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
     return tmpResult;
   },
