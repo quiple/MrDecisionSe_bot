@@ -223,6 +223,9 @@ const keywordList = [
       "자", "지 말자",
       "(아/어)라", "지 마",
       "(아/어)", "지 마",
+      "(아/어)", "지 마",
+      "자", "지 말자",
+      "(아/어)라", "지 말어",
     ]
   },
   { // 할까 말까
@@ -272,6 +275,7 @@ const keywordList = [
   { keyword: /괜춘한가(?:\?|\S*$)/, behavior: "pickOne", parameter: ["괜춘", "안괜춘", "콜", "ㄴㄴ", "완전괜춘", "낫괜춘"] },
   { keyword: /갠춘\?/, behavior: "pickOne", parameter: ["갠춘", "안갠춘", "콜", "ㄴㄴ", "완전갠춘", "낫갠춘"] },
   { keyword: /갠춘한가(?:\?|\S*$)/, behavior: "pickOne", parameter: ["갠춘", "안갠춘", "콜", "ㄴㄴ", "완전갠춘", "낫갠춘"] },
+
   { keyword: /괜찮아\?/, behavior: "pickOne", parameter: ["괜찮아", "별로야", "콜", "ㄴㄴ", "괜찮!", "안괜찮"] },
   { keyword: /괜찮나(?:\?|\S*$)/, behavior: "pickOne", parameter: ["괜찮아", "별로야", "콜", "ㄴㄴ", "괜찮!", "안괜찮"] },
   { keyword: /괜찮냐(?:\?|\S*$)/, behavior: "pickOne", parameter: ["괜찮아", "별로야", "콜", "ㄴㄴ", "괜찮!", "안괜찮"] },
