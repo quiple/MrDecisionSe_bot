@@ -164,7 +164,7 @@ const behaviors = {
         case ["지냐", "져", "질까"].some(check): verb(term + "지다", term + "져"); break;
         case ["히냐", "혀", "힐까"].some(check): verb(term + "히다", term + "혀"); break;
 
-        case ["으냐", "을까"].some(check): verb(term + "으다", term + (positive.includes(Hangul.d(term).pop()) ? "아" : "어")); break;
+        case ["으냐", "아", "어", "을까"].some(check): verb(term + "으다", term + (positive.includes(Hangul.d(term).pop()) ? "아" : "어")); break;
         default: break;
       }
       response = new Analyzer(verbs, ends).analyze(matchResult[1])[0][0]._(list[Math.floor(Math.random() * list.length)]);
