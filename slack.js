@@ -1,7 +1,7 @@
-const config = require("./config.js");
-const mrDecisionBot = require("./mrDecisionBot.js");
+const config = require('./config.js');
+const mrDecisionBot = require('./mrDecisionBot.js');
 
-const { App } = require("@slack/bolt");
+const { App } = require('@slack/bolt');
 
 const app = new App({
   token: config.SLACK_BOT_TOKEN,
@@ -17,5 +17,5 @@ app.message(/\D*/, async ({ context, say }) => {
 
 (async () => {
   await app.start(3500);
-  console.log("⚡️ Bolt app is running!");
+  console.log('⚡️ Bolt app is running!');
 })();
