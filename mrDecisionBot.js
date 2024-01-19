@@ -138,16 +138,16 @@ const behaviors = {
       let check = (char) => matchResult[1].endsWith(char);
       switch (true) {
         case ["가냐", "가", "갈까"].some(check): verb(term + "가다", term + "가"); break;
-        case ["같냐", "같아", "같을까"].some(check): verb(term + "같다", term + "같아"); break;
+        case ["같냐", "같아", "같어", "같을까"].some(check): verb(term + "같다", term + "같아"); break;
         case ["나냐", "나", "날까"].some(check): verb(term + "나다", term + "나"); break;
         case ["라냐", "라", "랄까"].some(check): verb(term + "라다", term + "라"); break;
-        case ["마냐", "말아", "말까"].some(check): verb(term + "말다", term + "말아"); break;
+        case ["마냐", "말아", "말어", "말까"].some(check): verb(term + "말다", term + "말아"); break;
         case ["사냐", "사", "살까"].some(check): verb(term + "사다", term + "사"); break;
         case ["싸냐", "싸", "쌀까"].some(check): verb(term + "싸다", term + "싸"); break;
         case ["자냐", "자", "잘까"].some(check): verb(term + "자다", term + "자"); break;
         case ["차냐", "차", "찰까"].some(check): verb(term + "차다", term + "차"); break;
         case ["타냐", "타", "탈까"].some(check): verb(term + "타다", term + "타"); break;
-        case ["파냐", "팔아", "팔까"].some(check): verb(term + "팔다", term + "팔아"); break;
+        case ["파냐", "팔아", "팔어", "팔까"].some(check): verb(term + "팔다", term + "팔아"); break;
         case ["하냐", "해", "할까"].some(check): verb(term + "하다", term + "해"); break;
         case ["거냐", "걸어", "걸까"].some(check): verb(term + "걸다", term + "걸어"); break;
         case ["서냐", "서", "설까"].some(check): verb(term + "서다", term + "서"); break;
@@ -155,7 +155,8 @@ const behaviors = {
         case ["수냐", "숴", "술까"].some(check): verb(term + "수다", term + "숴"); break;
         case ["우냐", "워", "울까"].some(check): verb(term + "우다", term + "워"); break;
         case ["죽냐", "죽어", "죽을까"].some(check): verb(term + "죽다", term + "죽어"); break;
-        case ["퀴냐", "퀴어", "퀼까"].some(check): verb(term + "퀴다", term + "퀴어"); break;
+        case ["뀌냐", "뀌어", "껴", "뀔까"].some(check): verb(term + "뀌다", term + "뀌어"); break;
+        case ["퀴냐", "퀴어", "켜", "퀼까"].some(check): verb(term + "퀴다", term + "퀴어"); break;
         case ["그냐", "가", "거", "글까"].some(check): verb(term + "그다", term + (positive.includes(Hangul.d(term).pop()) ? "가" : "거")); break;
         case ["르냐", "라", "러", "를까"].some(check): verb(term + "르다", (Hangul.endsWithConsonant(term) ? term : Hangul.a(term + "ㄹ")) + (positive.includes(Hangul.d(term).pop()) ? "라" : "러")); break;
         case ["기냐", "겨", "길까"].some(check): verb(term + "기다", term + "겨"); break;
