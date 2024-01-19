@@ -1,9 +1,6 @@
 const Hangul = require('hangul-js')
-const { V, E, Analyzer } = require('eomi-js')
-
-const positive = ['ㅏ', 'ㅑ', 'ㅗ', 'ㅛ', 'ㅘ']
-const verbs = []
-const ends = [new E('(아/어)'), new E('ㄹ까', '을까'), new E('냐')]
+const { E, Analyzer } = require('eomi-js')
+const verbsKor = require('./verbsKor')
 
 const explicitCommands = [
   {
@@ -32,31 +29,37 @@ const keywordList = [
     // 해 말아
     keyword: /(\S+)\s?(?:말아|말어)(?:\?|\S*$)/,
     behavior: 'pickOne',
-    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', '(아/어)려고?', '(아/어)겠냐?'],
+    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('(아/어)려고?', '으려고?'), ('(아/어)겠냐?', '겠냐?')],
   },
   {
     // 할까 말까
     keyword: /(\S+까)\s?말까(?:\?|\S*$)/,
     behavior: 'pickOne',
-    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', '(아/어)려고?', '(아/어)겠냐?'],
+    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('(아/어)려고?', '으려고?'), ('(아/어)겠냐?', '겠냐?')],
   },
   {
     // 하나 마냐
     keyword: /(\S+냐)\s?마냐(?:\?|\S*$)/,
     behavior: 'pickOne',
-    parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', '(아/어)라고?', '(아/어)겠냐?'],
+    parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', ('(아/어)라고?', '으라고?'), ('(아/어)겠냐?', '겠냐?')],
   },
   {
     // 할까 안 할까
-    keyword: /(\S+까)\s안\s?(\S+까)(?:\?|\S*$)/,
+    keyword: /([^\s갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]+까)\s안\s?[^\s갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]+까(?:\?|\S*$)/,
     behavior: 'pickOne',
-    parameter: ['(아/어)', '진 않음', ('(아/어)ㅁ', '음'), '진 않지', ('ㄴ다', '는다'), '진 않을듯', ('ㄹ듯', '을듯'), '지 않을 거 같다', '', '(아/어)겠냐?'],
+    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('(아/어)려고?', '으려고?'), ('(아/어)겠냐?', '겠냐?')],
+  },
+  {
+    // 했을까 안 했을까
+    keyword: /(\S*[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을까)\s안\s?\S*[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을까(?:\?|\S*$)/,
+    behavior: 'pickOne',
+    parameter: ['ㅆ어', '진 않았음', 'ㅆ음', '진 않았겠지', 'ㅆ다', '진 않았을듯', 'ㅆ을듯', '지 않았을거 같다', 'ㅆ을거 같음?', 'ㅆ겠냐?'],
   },
   {
     // 하냐 안 하냐
-    keyword: /(\S+냐)\s안\s?(\S+냐)(?:\?|\S*$)/,
+    keyword: /(\S+냐)\s안\s?\S+냐(?:\?|\S*$)/,
     behavior: 'pickOne',
-    parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', '(아/어)라고?', '(아/어)겠냐?'],
+    parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', ('(아/어)라고?', '으라고?'), ('(아/어)겠냐?', '겠냐?')],
   },
 
   { keyword: /콜\?/, behavior: 'pickOne', parameter: ['콜', '노콜', '콜', 'ㄴㄴ', '완전콜', '별로..'] },
@@ -87,118 +90,45 @@ const keywordList = [
   },
 ]
 
-const verb = function (a, b) {
-  verbs.push(new V(a, b))
+const isPo = function (t) {
+  ['ㅏ', 'ㅑ', 'ㅗ', 'ㅛ', 'ㅘ'].includes(Hangul.d(t, true).pop()[1])
 }
 
-const check = function (terms) {
-  terms
-}
+const ends = [
+  new E('(아/어)'),
+  new E('(아/어)도'),
+  new E('ㄹ까', '을까'),
+  new E('ㅆ을까', '었을까'),
+  new E('ㅆ었을까', '었었을까'),
+  new E('냐'),
+  new E('ㅆ냐', '었냐'),
+  new E('ㅆ었냐', '었었냐'),
+]
+
+const a = new Analyzer(verbsKor, ends)
 
 const behaviors = {
-  pickOne: function (matchResult, list) {
-    let tmpResult = {}
-    let response = list[Math.floor(Math.random() * list.length)]
-    tmpResult.q = matchResult.input
-    if (matchResult[1]) {
-      let term = matchResult[1].slice(0, -2)
-      let check2 = (char) => matchResult[1].endsWith(char)
-      switch (true) {
-        case ['가냐', '가', '갈까'].some(check):
-          verb(term + '가다', term + '가')
-          break
-        case ['같냐', '같아', '같어', '같을까'].some(check):
-          verb(term + '같다', term + '같아')
-          break
-        case ['나냐', '나', '날까'].some(check):
-          verb(term + '나다', term + '나')
-          break
-        case ['라냐', '라', '랄까'].some(check):
-          verb(term + '라다', term + '라')
-          break
-        case ['마냐', '말아', '말어', '말까'].some(check):
-          verb(term + '말다', term + '말아')
-          break
-        case ['사냐', '사', '살까'].some(check):
-          verb(term + '사다', term + '사')
-          break
-        case ['싸냐', '싸', '쌀까'].some(check):
-          verb(term + '싸다', term + '싸')
-          break
-        case ['자냐', '자', '잘까'].some(check):
-          verb(term + '자다', term + '자')
-          break
-        case ['차냐', '차', '찰까'].some(check):
-          verb(term + '차다', term + '차')
-          break
-        case ['타냐', '타', '탈까'].some(check):
-          verb(term + '타다', term + '타')
-          break
-        case ['파냐', '팔아', '팔어', '팔까'].some(check):
-          verb(term + '팔다', term + '팔아')
-          break
-        case ['하냐', '해', '할까'].some(check):
-          verb(term + '하다', term + '해')
-          break
-        case ['거냐', '걸어', '걸까'].some(check):
-          verb(term + '걸다', term + '걸어')
-          break
-        case ['서냐', '서', '설까'].some(check):
-          verb(term + '서다', term + '서')
-          break
-        case ['두냐', '둬', '둘까'].some(check):
-          verb(term + '두다', term + '둬')
-          break
-        case ['수냐', '숴', '술까'].some(check):
-          verb(term + '수다', term + '숴')
-          break
-        case ['우냐', '워', '울까'].some(check):
-          verb(term + '우다', term + '워')
-          break
-        case ['죽냐', '죽어', '죽을까'].some(check):
-          verb(term + '죽다', term + '죽어')
-          break
-        case ['뀌냐', '뀌어', '껴', '뀔까'].some(check):
-          verb(term + '뀌다', term + '뀌어')
-          break
-        case ['퀴냐', '퀴어', '켜', '퀼까'].some(check):
-          verb(term + '퀴다', term + '퀴어')
-          break
-        case ['그냐', '가', '거', '글까'].some(check):
-          verb(term + '그다', term + (positive.includes(Hangul.d(term).pop()) ? '가' : '거'))
-          break
-        case ['르냐', '라', '러', '를까'].some(check):
-          verb(
-            term + '르다',
-            (Hangul.endsWithConsonant(term) ? term : Hangul.a(term + 'ㄹ')) + (positive.includes(Hangul.d(term).pop()) ? '라' : '러')
-          )
-          break
-        case ['기냐', '겨', '길까'].some(check):
-          verb(term + '기다', term + '겨')
-          break
-        case ['리냐', '려', '릴까'].some(check):
-          verb(term + '리다', term + '려')
-          break
-        case ['이냐', '여', '일까'].some(check):
-          verb(term + '이다', term + '여')
-          break
-        case ['지냐', '져', '질까'].some(check):
-          verb(term + '지다', term + '져')
-          break
-        case ['히냐', '혀', '힐까'].some(check):
-          verb(term + '히다', term + '혀')
-          break
-
-        case ['으냐', '아', '어', '을까'].some(check):
-          verb(term + '으다', term + (positive.includes(Hangul.d(term).pop()) ? '아' : '어'))
-          break
-        default:
-          break
+  pickOne: function (m, list) {
+    let temp = {}
+    let res = list[Math.floor(Math.random() * list.length)]
+    temp.q = m.input
+    if (m[1]) {
+      if (a.analyze(m[1].slice(-5))[0]) {
+        res = m[1].slice(0, -5) + a.analyze(m[1].slice(-5))[0][0]._(res)
+      } else if (a.analyze(m[1].slice(-4))[0]) {
+        res = m[1].slice(0, -4) + a.analyze(m[1].slice(-4))[0][0]._(res)
+      } else if (a.analyze(m[1].slice(-3))[0]) {
+        res = m[1].slice(0, -3) + a.analyze(m[1].slice(-3))[0][0]._(res)
+      } else if (a.analyze(m[1].slice(-2))[0]) {
+        res = m[1].slice(0, -2) + a.analyze(m[1].slice(-2))[0][0]._(res)
+      } else if (a.analyze(m[1].slice(-1))[0]) {
+        res = m[1].slice(0, -1) + a.analyze(m[1].slice(-1))[0][0]._(res)
+      } else {
+        res = ''
       }
-      response = new Analyzer(verbs, ends).analyze(matchResult[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
     }
-    tmpResult.a = response
-    return tmpResult
+    temp.a = res
+    return temp
   },
 
   customPick: function (matchResult) {
