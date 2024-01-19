@@ -6,4 +6,4 @@ module.exports = {
   discord_token: 'discord token is here',
   SLACK_SIGNING_SECRET: 'slack signing secret is here',
   SLACK_BOT_TOKEN: 'slack bot token is here',
-};
+}

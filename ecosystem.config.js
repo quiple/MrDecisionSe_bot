@@ -25,4 +25,4 @@ module.exports = {
       time: true,
     },
   ],
-};
+}

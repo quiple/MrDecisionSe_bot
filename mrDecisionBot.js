@@ -1,16 +1,16 @@
-const Hangul = require('hangul-js');
-const { V, E, Analyzer } = require('eomi-js');
+const Hangul = require('hangul-js')
+const { V, E, Analyzer } = require('eomi-js')
 
-const positive = ['ㅏ', 'ㅑ', 'ㅗ', 'ㅛ', 'ㅘ'];
-const verbs = [];
-const ends = [new E('(아/어)'), new E('ㄹ까', '을까'), new E('냐')];
+const positive = ['ㅏ', 'ㅑ', 'ㅗ', 'ㅛ', 'ㅘ']
+const verbs = []
+const ends = [new E('(아/어)'), new E('ㄹ까', '을까'), new E('냐')]
 
 const explicitCommands = [
   {
     command: /^(?:김결정|결정아|김결쩡|깅결정|김결전|김경절|심결정|김굘정|김경정|김경전|김결잔|긴결정|긴결전|긴경정|긴경절)!+\s?/,
     behavior: 'customPick',
   },
-];
+]
 
 const fallbackTexts = [
   '귀찮으니깐 말 좀 그만 걸어',
@@ -25,7 +25,7 @@ const fallbackTexts = [
   '나는 결정을 도와주는 거지 네 말상대를 해 주는 게 아니야',
   '구질구질하게 왜 이래?',
   '나한테 왜 자꾸 이래?',
-];
+]
 
 const keywordList = [
   {
@@ -85,7 +85,7 @@ const keywordList = [
     keyword: /(?:김결정|결정아|결정이|김결쩡|깅결정|김결전|김경절|심결정|김굘정|김경정|김경전|김결잔|긴결정|긴결전|긴경정|긴경절)/,
     behavior: 'fallback',
   },
-];
+]
 
 // 아직 안 옮김
 const keywordList2 = [
@@ -114,186 +114,190 @@ const keywordList2 = [
   { keyword: /(\S+)도\s?되나(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['돼', '안 돼', '$도 돼', '$면 안 되지', '$든지', 'ㄴㄴ'] },
   { keyword: /(\S+)도\s?되냐(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['돼', '안 돼', '$도 돼', '$면 안 되지', '$든지', 'ㄴㄴ'] },
   { keyword: /(\S+)도\s?될까(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['돼', '안 돼', '$도 돼', '$면 안 되지', '$든지', 'ㄴㄴ'] },
-];
+]
 
 const verb = function (a, b) {
-  verbs.push(new V(a, b));
-};
+  verbs.push(new V(a, b))
+}
+
+const check = function (terms) {
+  terms
+}
 
 const behaviors = {
   pickOne: function (matchResult, list) {
-    let tmpResult = {};
-    let response = list[Math.floor(Math.random() * list.length)];
-    tmpResult.q = matchResult.input;
+    let tmpResult = {}
+    let response = list[Math.floor(Math.random() * list.length)]
+    tmpResult.q = matchResult.input
     if (matchResult[1]) {
-      let term = matchResult[1].slice(0, -2);
-      let check = (char) => matchResult[1].endsWith(char);
+      let term = matchResult[1].slice(0, -2)
+      let check2 = (char) => matchResult[1].endsWith(char)
       switch (true) {
         case ['가냐', '가', '갈까'].some(check):
-          verb(term + '가다', term + '가');
-          break;
+          verb(term + '가다', term + '가')
+          break
         case ['같냐', '같아', '같어', '같을까'].some(check):
-          verb(term + '같다', term + '같아');
-          break;
+          verb(term + '같다', term + '같아')
+          break
         case ['나냐', '나', '날까'].some(check):
-          verb(term + '나다', term + '나');
-          break;
+          verb(term + '나다', term + '나')
+          break
         case ['라냐', '라', '랄까'].some(check):
-          verb(term + '라다', term + '라');
-          break;
+          verb(term + '라다', term + '라')
+          break
         case ['마냐', '말아', '말어', '말까'].some(check):
-          verb(term + '말다', term + '말아');
-          break;
+          verb(term + '말다', term + '말아')
+          break
         case ['사냐', '사', '살까'].some(check):
-          verb(term + '사다', term + '사');
-          break;
+          verb(term + '사다', term + '사')
+          break
         case ['싸냐', '싸', '쌀까'].some(check):
-          verb(term + '싸다', term + '싸');
-          break;
+          verb(term + '싸다', term + '싸')
+          break
         case ['자냐', '자', '잘까'].some(check):
-          verb(term + '자다', term + '자');
-          break;
+          verb(term + '자다', term + '자')
+          break
         case ['차냐', '차', '찰까'].some(check):
-          verb(term + '차다', term + '차');
-          break;
+          verb(term + '차다', term + '차')
+          break
         case ['타냐', '타', '탈까'].some(check):
-          verb(term + '타다', term + '타');
-          break;
+          verb(term + '타다', term + '타')
+          break
         case ['파냐', '팔아', '팔어', '팔까'].some(check):
-          verb(term + '팔다', term + '팔아');
-          break;
+          verb(term + '팔다', term + '팔아')
+          break
         case ['하냐', '해', '할까'].some(check):
-          verb(term + '하다', term + '해');
-          break;
+          verb(term + '하다', term + '해')
+          break
         case ['거냐', '걸어', '걸까'].some(check):
-          verb(term + '걸다', term + '걸어');
-          break;
+          verb(term + '걸다', term + '걸어')
+          break
         case ['서냐', '서', '설까'].some(check):
-          verb(term + '서다', term + '서');
-          break;
+          verb(term + '서다', term + '서')
+          break
         case ['두냐', '둬', '둘까'].some(check):
-          verb(term + '두다', term + '둬');
-          break;
+          verb(term + '두다', term + '둬')
+          break
         case ['수냐', '숴', '술까'].some(check):
-          verb(term + '수다', term + '숴');
-          break;
+          verb(term + '수다', term + '숴')
+          break
         case ['우냐', '워', '울까'].some(check):
-          verb(term + '우다', term + '워');
-          break;
+          verb(term + '우다', term + '워')
+          break
         case ['죽냐', '죽어', '죽을까'].some(check):
-          verb(term + '죽다', term + '죽어');
-          break;
+          verb(term + '죽다', term + '죽어')
+          break
         case ['뀌냐', '뀌어', '껴', '뀔까'].some(check):
-          verb(term + '뀌다', term + '뀌어');
-          break;
+          verb(term + '뀌다', term + '뀌어')
+          break
         case ['퀴냐', '퀴어', '켜', '퀼까'].some(check):
-          verb(term + '퀴다', term + '퀴어');
-          break;
+          verb(term + '퀴다', term + '퀴어')
+          break
         case ['그냐', '가', '거', '글까'].some(check):
-          verb(term + '그다', term + (positive.includes(Hangul.d(term).pop()) ? '가' : '거'));
-          break;
+          verb(term + '그다', term + (positive.includes(Hangul.d(term).pop()) ? '가' : '거'))
+          break
         case ['르냐', '라', '러', '를까'].some(check):
           verb(
             term + '르다',
             (Hangul.endsWithConsonant(term) ? term : Hangul.a(term + 'ㄹ')) + (positive.includes(Hangul.d(term).pop()) ? '라' : '러')
-          );
-          break;
+          )
+          break
         case ['기냐', '겨', '길까'].some(check):
-          verb(term + '기다', term + '겨');
-          break;
+          verb(term + '기다', term + '겨')
+          break
         case ['리냐', '려', '릴까'].some(check):
-          verb(term + '리다', term + '려');
-          break;
+          verb(term + '리다', term + '려')
+          break
         case ['이냐', '여', '일까'].some(check):
-          verb(term + '이다', term + '여');
-          break;
+          verb(term + '이다', term + '여')
+          break
         case ['지냐', '져', '질까'].some(check):
-          verb(term + '지다', term + '져');
-          break;
+          verb(term + '지다', term + '져')
+          break
         case ['히냐', '혀', '힐까'].some(check):
-          verb(term + '히다', term + '혀');
-          break;
+          verb(term + '히다', term + '혀')
+          break
 
         case ['으냐', '아', '어', '을까'].some(check):
-          verb(term + '으다', term + (positive.includes(Hangul.d(term).pop()) ? '아' : '어'));
-          break;
+          verb(term + '으다', term + (positive.includes(Hangul.d(term).pop()) ? '아' : '어'))
+          break
         default:
-          break;
+          break
       }
-      response = new Analyzer(verbs, ends).analyze(matchResult[1])[0][0]._(list[Math.floor(Math.random() * list.length)]);
+      response = new Analyzer(verbs, ends).analyze(matchResult[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
     }
-    tmpResult.a = response;
-    return tmpResult;
+    tmpResult.a = response
+    return tmpResult
   },
 
   customPick: function (matchResult) {
-    let tmpResult = {};
-    tmpResult.q = matchResult.input;
-    let optionText = matchResult.input.slice(matchResult[0].length + matchResult.index).trim();
-    let options = optionText.split(',');
+    let tmpResult = {}
+    tmpResult.q = matchResult.input
+    let optionText = matchResult.input.slice(matchResult[0].length + matchResult.index).trim()
+    let options = optionText.split(',')
     if (options.length <= 1) {
-      options = optionText.split(' ');
+      options = optionText.split(' ')
     }
     if (options.length <= 1) {
       // return fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
-      tmpResult.a = fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
-      return tmpResult;
+      tmpResult.a = fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim()
+      return tmpResult
     }
     // return options[Math.floor(Math.random() * options.length)].trim();
-    tmpResult.a = options[Math.floor(Math.random() * options.length)].trim();
-    return tmpResult;
+    tmpResult.a = options[Math.floor(Math.random() * options.length)].trim()
+    return tmpResult
   },
 
   fallback: function (matchResult) {
-    let tmpResult = {};
-    tmpResult.q = matchResult.input;
+    let tmpResult = {}
+    tmpResult.q = matchResult.input
     // return fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
-    tmpResult.a = fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim();
-    return tmpResult;
+    tmpResult.a = fallbackTexts[Math.floor(Math.random() * fallbackTexts.length)].trim()
+    return tmpResult
   },
-};
+}
 
 const checkKeywordAndGetResponse = function (text) {
-  let retData = null;
-  if (text === undefined) return null;
+  let retData = null
+  if (text === undefined) return null
 
   // Check explicit commands first
   for (let i = 0; i < explicitCommands.length; i++) {
-    let match = text.trim().match(new RegExp(explicitCommands[i].command));
+    let match = text.trim().match(new RegExp(explicitCommands[i].command))
     if (match === null) {
-      continue;
+      continue
     } else {
-      retData = behaviors[explicitCommands[i].behavior](match, explicitCommands[i].parameter);
-      return retData;
+      retData = behaviors[explicitCommands[i].behavior](match, explicitCommands[i].parameter)
+      return retData
     }
   }
 
   // Check keywords
   for (let i = 0; i < keywordList.length; i++) {
-    let match = text.trim().match(new RegExp(keywordList[i].keyword));
+    let match = text.trim().match(new RegExp(keywordList[i].keyword))
     if (match === null) {
-      continue;
+      continue
     } else {
-      retData = behaviors[keywordList[i].behavior](match, keywordList[i].parameter);
-      return retData;
+      retData = behaviors[keywordList[i].behavior](match, keywordList[i].parameter)
+      return retData
     }
   }
-  return null;
-};
+  return null
+}
 
 const mrDecisionBot = {
   process: function (update) {
-    if (update.message === null) return null;
-    let message = update.message.text;
-    return checkKeywordAndGetResponse(message);
+    if (update.message === null) return null
+    let message = update.message.text
+    return checkKeywordAndGetResponse(message)
   },
   discord: function (content) {
-    if (content === null) return null;
-    return checkKeywordAndGetResponse(content);
+    if (content === null) return null
+    return checkKeywordAndGetResponse(content)
   },
   helpMessage:
     '돌아온 김결정이다.\n말이 많진 않지만 결정적인 순간에 한마디 하는 성격이다.\n귀찮으니깐 웬만하면 말 걸지 마라.\n꼭 내가 결정해야겠는 일이 있으면 "김결정! 부먹 찍먹 중립" 이런 식으로 물어보도록.\n잘 부탁한다.',
   aboutText: 'https://twitter.com/MrDecision_bot',
-};
+}
 
-module.exports = mrDecisionBot;
+module.exports = mrDecisionBot
