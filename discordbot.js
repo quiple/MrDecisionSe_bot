@@ -12,10 +12,8 @@ client.on('ready', () => {
 })
 
 client.on('messageCreate', (msg) => {
-  /* Discord wrapper */
   let reply = mrDecisionBot.discord(msg.content)
   if (reply !== null) {
-    console.log(reply)
     msg.reply(reply.a)
   }
 })

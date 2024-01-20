@@ -6,4 +6,8 @@ module.exports = {
   discord_token: 'discord token is here',
   SLACK_SIGNING_SECRET: 'slack signing secret is here',
   SLACK_BOT_TOKEN: 'slack bot token is here',
+  bluesky_handle: 'bluesky bot handle is here',
+  bluesky_app_password: 'bluesky app password is here',
+  bluesky_owner: 'bluesky owner handle is here',
+  bluesky_owner_contact: 'bluesky owner contact is here',
 }
