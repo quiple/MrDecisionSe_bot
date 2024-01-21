@@ -10,10 +10,8 @@ async function main() {
   bot.setHandler(Events.MENTION, async ({ post }) => {
     let msg = post.text.replace('@' + config.bluesky_handle, '').trim()
     let reply = mrDecisionBot.discord(msg)
-    console.log(msg)
     if (reply !== null) {
       await bot.reply(reply.a, post)
-      console.log(reply.a)
     }
   })
 
