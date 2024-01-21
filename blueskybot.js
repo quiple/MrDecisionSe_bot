@@ -10,9 +10,13 @@ async function main() {
   bot.setHandler(Events.MENTION, async ({ post }) => {
     let msg = post.text.replace('@' + config.bluesky_handle, '').trim()
     let reply = mrDecisionBot.discord(msg)
-    if (reply !== null) {
-      await bot.reply(reply.a, post)
-    }
+    if (reply !== null) await bot.reply(reply.a, post)
+  })
+
+  bot.setHandler(Events.REPLY, async ({ post }) => {
+    let msg = post.text.replace('@' + config.bluesky_handle, '').trim()
+    let reply = mrDecisionBot.discord(msg)
+    if (reply !== null) await bot.reply(reply.a, post)
   })
 
   bot.startPolling()

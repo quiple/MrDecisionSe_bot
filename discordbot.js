@@ -13,7 +13,5 @@ client.on('ready', () => {
 
 client.on('messageCreate', (msg) => {
   let reply = mrDecisionBot.discord(msg.content)
-  if (reply !== null) {
-    msg.reply(reply.a)
-  }
+  if (reply !== null) msg.reply(reply.a)
 })
