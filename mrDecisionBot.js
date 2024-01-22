@@ -127,6 +127,70 @@ const a = new Analyzer(verbsKor, ends)
 
 const behaviors = {
   pickOne: function (m, list) {
+    // let t = {}
+    // let term = m[1]
+    // if (['까', '냐'].some(end => m[1].endsWith(end))) {
+    //   term = m[1].slice(0, -1)
+    // }
+    // let bat
+    // let termNoBat = term
+    // let isTermBat = Hangul.endsWithConsonant(term)
+    // let lastArr = Hangul.d(term, true).pop()
+    // let termLastCho = isTermBat ? Hangul.a(Hangul.ds(term).slice(0, -2)) : Hangul.a(Hangul.ds(term).slice(0, -1))
+    // if (isTermBat) {
+    //   termNoBat = Hangul.a(Hangul.d(term).slice(0, -1))
+    //   bat = Hangul.d(term).pop()
+    // }
+    // let response = list[Math.floor(Math.random() * list.length)]
+    // t.q = m.input
+    // if (m[1]) {
+    //   if (!isTermBat || (lastArr[1] === 'ㅏ' && bat === 'ㄹ')) {
+    //     verb(
+    //       termNoBat + '다',
+    //       Hangul.a(
+    //         (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
+    //           ? ''
+    //           : termNoBat
+    //         ) +
+    //         (lastArr[1] === 'ㅡ'
+    //           ? Hangul.a(termLastCho + 'ㅓ')
+    //           : (lastArr[1] === 'ㅣ'
+    //             ? Hangul.a(termLastCho + 'ㅕ')
+    //             : (positive.includes(lastArr[1])
+    //               ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
+    //               : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
+    //             )
+    //           )
+    //         )
+    //       )
+    //     )
+    //   } else if ((isTermBat && bat !== 'ㄹ') || (lastArr[1] !== 'ㅏ' && bat === 'ㄹ')) {
+    //     verb(
+    //       (bat === 'ㄹ' ? termNoBat : term) + '다',
+    //       term + (positive.includes(lastArr[1]) ? '아' : '어')
+    //     )
+    //   }
+    //   // response = new Analyzer(verbs, ends).analyze(m[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
+    //   response = (bat === 'ㄹ'
+    //     ? (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
+    //         ? ''
+    //         : termNoBat
+    //       ) +
+    //       (lastArr[1] === 'ㅡ'
+    //         ? Hangul.a(termLastCho + 'ㅓ')
+    //         : (lastArr[1] === 'ㅣ'
+    //           ? Hangul.a(termLastCho + 'ㅕ')
+    //           : (positive.includes(lastArr[1])
+    //             ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
+    //             : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
+    //           )
+    //         )
+    //       )
+    //     : term + (positive.includes(lastArr[1]) ? '아' : '어')
+    //   )
+    // }
+    // t.a = response
+    // return t
     let temp = {}
     let res = list[Math.floor(Math.random() * list.length)]
     temp.q = m.input
@@ -215,7 +279,7 @@ const mrDecisionBot = {
     return checkKeywordAndGetResponse(content)
   },
   helpMessage:
-    '돌아온 김결정이다.\n말이 많진 않지만 결정적인 순간에 한마디 하는 성격이다.\n귀찮으니깐 웬만하면 말 걸지 마라.\n꼭 내가 결정해야겠는 일이 있으면 "김결정! 부먹 찍먹 중립" 이런 식으로 물어보도록.\n잘 부탁한다.',
+    '다시 돌아온 김결정이다.\n말이 많진 않지만 결정적인 순간에 한마디 하는 성격이다.\n귀찮으니깐 웬만하면 말 걸지 마라.\n꼭 내가 결정해야겠는 일이 있으면 "김결정! 부먹 찍먹 중립" 이런 식으로 물어보도록.\n잘 부탁한다.',
   aboutText: 'https://twitter.com/MrDecision_bot',
 }
 
