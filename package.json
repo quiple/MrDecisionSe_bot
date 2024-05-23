@@ -1,8 +1,8 @@
 {
-  "name": "mrdecisionse_bot",
+  "name": "kim-decision-bot",
   "version": "0.0.1",
   "type": "module",
-  "description": "mrDecision Second Edtion",
+  "description": "다시 돌아온 김결정 봇",
   "main": "app.js",
   "dependencies": {
     "@line/bot-sdk": "^8.2.0",
@@ -19,9 +19,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://4582@bitbucket.org/4582/mrdecisionse_bot.git"
+    "url": "git+https://github.com/quiple/MrDecisionSe_bot.git"
   },
-  "author": "",
+  "author": "quiple",
   "license": "MIT",
-  "homepage": "https://bitbucket.org/4582/mrdecisionse_bot#readme"
+  "homepage": "https://github.com/quiple/MrDecisionSe_bot"
 }
