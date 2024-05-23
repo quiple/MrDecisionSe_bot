@@ -1,6 +1,6 @@
-const { V } = require('eomi-js')
+import { V } from 'eomi-js'
 
-module.exports = [
+export default [
   new V('가다', '가', '가니'),
   new V('갈다', '갈아', '가니'),
     new V('갈다', '갈어', '가니'),

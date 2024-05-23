@@ -1,11 +1,11 @@
-const config = require('./config.js')
-const mrDecisionBot = require('./mrDecisionBot.js')
-const { Client, GatewayIntentBits } = require('discord.js')
+import { discord_token } from './config.js'
+import { mrDecisionBot } from './mrDecisionBot.js'
+import { Client, GatewayIntentBits } from 'discord.js'
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.DirectMessages, GatewayIntentBits.MessageContent],
 })
 
-client.login(config.discord_token)
+client.login(discord_token)
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`)

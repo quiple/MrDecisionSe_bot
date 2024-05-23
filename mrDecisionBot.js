@@ -1,6 +1,5 @@
-const Hangul = require('hangul-js')
-const { E, Analyzer } = require('eomi-js')
-const verbsKor = require('./verbsKor')
+import { E, Analyzer } from 'eomi-js'
+import verbsKor from './verbsKor.js'
 
 const explicitCommands = [
   {
@@ -25,53 +24,38 @@ const fallbackTexts = [
 ]
 
 const keywordList = [
-  { // 해 말아
-    keyword: /(\S+)\s?(?:말아|말어)(?:\?|\S*$)/,
+  { // 해 말아/말어
+    keyword: /(\S+)\s?(?:말아|말어)(?:\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
   },
-  { // 할까
-    keyword: /(?<!야\s?)([^\s될뭘일]+까)(?:\?|\S*$)/,
+  { // 할까 (말까)
+    keyword: /(?<!야\s?)([^\s될뭘일]+까)(?:\S*\??$|\s?말까\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
   },
-  { // 일까, 인가
-    keyword: /([^\s뭐]+(?:인가|일까))(?:\?|\S*$)/,
-    behavior: 'pickOne',
-    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
+  { // 인가/일까
+    keyword: /([^\s뭐]+(?:인가|일까))(?:\S*\??$)/,
+    behavior: 'boolean',
+    parameter: [`임`, ' 아님', ' 맞음', ' 아니야', ' 맞는듯', ' 아닌듯', ' 맞을걸?', ' 아닐걸?'],
   },
-  { // 해야/해도 될까
-    keyword: /(\S+(?:도|야))\s?(?:될|할)까(?:\?|\S*$)/,
+  { // 해야/해도 되나/될까/할까
+    keyword: /(\S+(?:도|야))\s?(?:되나|될까|할까)(?:\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)야지', ('면 안되지', '으면 안되지'), '(아/어)야 됨', ('면 안됨', '으면 안됨'), '(아/어)라', '지 마', '(아/어)도 될듯', ('면 안될듯', '으면 안될듯'), '(아/어)도 될거 같음?', '(아/어)도 되겠냐?'],
   },
-  { // 할까 (하지) 말까
-    keyword: /(\S+까)\s?(\S+지)?말까(?:\?|\S*$)/,
-    behavior: 'pickOne',
-    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
-  },
-  { // 하냐 마냐
-    keyword: /(\S+냐)\s?마냐(?:\?|\S*$)/,
+  { // 하냐 (마냐)
+    keyword: /(\S+냐)(?:\S*\??$|\s?마냐\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', ('라고?', '으라고?'), '겠냐?'],
   },
-  { // 할까 안 할까
-    keyword: /(\S+(?<!도\s?될|야\s?될|야\s?할|[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을)까)\s안\s?\S+(?<!도\s?될|야\s?될|야\s?할|[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을)까(?:\?|\S*$)/,
-    behavior: 'pickOne',
-    parameter: ['(아/어)', '진 않음', 'ㅁ', '진 않겠지', 'ㄴ다', '진 않을듯', 'ㄹ듯', '지 않을거 같다', 'ㄹ거 같음?', '겠냐?'],
-  },
-  { // 해야 할까 안 해도 될까
-    keyword: /(\S+(?<=도\s?될|야\s?될|야\s?할|[^갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을)까)\s안\s?\S+(?<=도\s?될|야\s?될|야\s?할|[^갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을)까(?:\?|\S*$)/,
-    behavior: 'pickOne',
-    parameter: ['(아/어)야지', ('면 안되지', '으면 안되지'), '(아/어)야 됨', ('면 안됨', '으면 안됨'), '(아/어)라', '지 마', '(아/어)도 될듯', ('면 안될듯', '으면 안될듯'), '(아/어)도 될거 같음?', '(아/어)도 되겠냐?'],
-  },
-  { // 했을까 안 했을까
-    keyword: /(\S*[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을까)\s안\s?\S*[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을까(?:\?|\S*$)/,
+  { // 했을까
+    keyword: /(\S*[갔깠났닸땄랐맜밨빴샀쌌았잤짰찼탔팠갰깼냈댔땠랬맸뱄뺐샜쌨앴쟀쨌챘캤탰팼했얐얬헀겄껐넜떴렀멌벘뻤섰썼었젔쩠첬컸텄펐겠넸뎄뗐렜멨벴셌엤켔헸겼꼈녔뎠뗬렸몄볐뼜셨였졌쪘쳤켰텼폈혔곘옜괐꽜놨뫘봤쐈왔쫬홨괬꽸뇄됐뙜뢨뫴뵀쇘쐤왰좼쬈됬뵜쇴쑀욌붔궜꿨눴뒀뤘뭤붰쉈쒔웠줬쭸췄퉜궸뀄뒸뜄윘뀼읬깄낐딨맀밌빘싰씼있짔칬킸핐힜]을까)(?:\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)ㅆ어', '진 않았음', '(아/어)ㅆ음', '진 않았겠지', '(아/어)ㅆ다', '진 않았을듯', '(아/어)ㅆ을듯', '지 않았을거 같다', '(아/어)ㅆ을거 같음?', '(아/어)ㅆ겠냐?'],
   },
   { // 하냐 안 하냐
-    keyword: /(\S+냐)\s안\s?\S+냐(?:\?|\S*$)/,
+    keyword: /(\S+냐)\s안\s?\S+냐(?:\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', ('라고?', '으라고?'), '겠냐?'],
   },
@@ -79,7 +63,7 @@ const keywordList = [
   { keyword: /콜\?/, behavior: 'pickOne', parameter: ['콜', '노콜', '콜', 'ㄴㄴ', '완전콜', '별로..'] },
 
   {
-    keyword: /(?:어때|어떄|어떰|어뗘|워뗘|어떤가|어떤지(?:어떠|어떡|어떨|어떻)\S+)(?:\?|\S*$)/,
+    keyword: /(?:어때|어떄|어떰|어뗘|워뗘|어떤가|어떤지(?:어떠|어떡|어떨|어떻)\S+)(?:\S*\??$)/,
     behavior: 'pickOne',
     parameter: ['굳', '별론데', '괜찮네', 'ㄴㄴ', '좋으다', '그닥..'],
   },
@@ -87,26 +71,22 @@ const keywordList = [
   { keyword: /결정\?/, behavior: 'pickOne', parameter: ['결정', '안결정', '결ㅋ정ㅋ', 'ㄴㄴ', 'ㅇㅋ', '난 반댈세'] },
 
   { keyword: /괜춘\?/, behavior: 'pickOne', parameter: ['괜춘', '안괜춘', '콜', 'ㄴㄴ', '완전괜춘', '낫괜춘'] },
-  { keyword: /괜춘한가(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['괜춘', '안괜춘', '콜', 'ㄴㄴ', '완전괜춘', '낫괜춘'] },
+  { keyword: /괜춘한가(?:\S*\??$)/, behavior: 'pickOne', parameter: ['괜춘', '안괜춘', '콜', 'ㄴㄴ', '완전괜춘', '낫괜춘'] },
   { keyword: /갠춘\?/, behavior: 'pickOne', parameter: ['갠춘', '안갠춘', '콜', 'ㄴㄴ', '완전갠춘', '낫갠춘'] },
-  { keyword: /갠춘한가(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['갠춘', '안갠춘', '콜', 'ㄴㄴ', '완전갠춘', '낫갠춘'] },
+  { keyword: /갠춘한가(?:\S*\??$)/, behavior: 'pickOne', parameter: ['갠춘', '안갠춘', '콜', 'ㄴㄴ', '완전갠춘', '낫갠춘'] },
 
   { keyword: /괜찮아\?/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
-  { keyword: /괜찮나(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
-  { keyword: /괜찮냐(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
+  { keyword: /괜찮나(?:\S*\??$)/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
+  { keyword: /괜찮냐(?:\S*\??$)/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
   { keyword: /괜찮음\?/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
   { keyword: /괜찮겠어\?/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
-  { keyword: /괜찮을까(?:\?|\S*$)/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
+  { keyword: /괜찮을까(?:\S*\??$)/, behavior: 'pickOne', parameter: ['괜찮아', '별로야', '콜', 'ㄴㄴ', '괜찮!', '안괜찮'] },
 
   {
     keyword: /김결정|결정아|결정이|김결쩡|깅결정|김결전|김경절|심결정|김굘정|김경정|김경전|김결잔|긴결정|긴결전|긴경정|긴경절/,
     behavior: 'fallback',
   },
 ]
-
-const isPo = function (t) {
-  ['ㅏ', 'ㅑ', 'ㅗ', 'ㅛ', 'ㅘ'].includes(Hangul.d(t, true).pop()[1])
-}
 
 const ends = [
   new E('(아/어)'),
@@ -141,77 +121,16 @@ const ends = [
 const a = new Analyzer(verbsKor, ends)
 
 const behaviors = {
-  boolean: function () {
-
+  boolean: function (m, list) {
+    let temp = {}
+    let res = list[Math.floor(Math.random() * list.length)]
+    temp.q = m.input
+    if (m[1]) res = m[1].slice(0, -2) + res
+    temp.a = res
+    return temp
   },
 
   pickOne: function (m, list) {
-    /*
-    let t = {}
-    let term = m[1]
-    if (['까', '냐'].some(end => m[1].endsWith(end))) {
-      term = m[1].slice(0, -1)
-    }
-    let bat
-    let termNoBat = term
-    let isTermBat = Hangul.endsWithConsonant(term)
-    let lastArr = Hangul.d(term, true).pop()
-    let termLastCho = isTermBat ? Hangul.a(Hangul.ds(term).slice(0, -2)) : Hangul.a(Hangul.ds(term).slice(0, -1))
-    if (isTermBat) {
-      termNoBat = Hangul.a(Hangul.d(term).slice(0, -1))
-      bat = Hangul.d(term).pop()
-    }
-    let response = list[Math.floor(Math.random() * list.length)]
-    t.q = m.input
-    if (m[1]) {
-      if (!isTermBat || (lastArr[1] === 'ㅏ' && bat === 'ㄹ')) {
-        verb(
-          termNoBat + '다',
-          Hangul.a(
-            (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
-              ? ''
-              : termNoBat
-            ) +
-            (lastArr[1] === 'ㅡ'
-              ? Hangul.a(termLastCho + 'ㅓ')
-              : (lastArr[1] === 'ㅣ'
-                ? Hangul.a(termLastCho + 'ㅕ')
-                : (positive.includes(lastArr[1])
-                  ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
-                  : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
-                )
-              )
-            )
-          )
-        )
-      } else if ((isTermBat && bat !== 'ㄹ') || (lastArr[1] !== 'ㅏ' && bat === 'ㄹ')) {
-        verb(
-          (bat === 'ㄹ' ? termNoBat : term) + '다',
-          term + (positive.includes(lastArr[1]) ? '아' : '어')
-        )
-      }
-      // response = new Analyzer(verbs, ends).analyze(m[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
-      response = (bat === 'ㄹ'
-        ? (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
-            ? ''
-            : termNoBat
-          ) +
-          (lastArr[1] === 'ㅡ'
-            ? Hangul.a(termLastCho + 'ㅓ')
-            : (lastArr[1] === 'ㅣ'
-              ? Hangul.a(termLastCho + 'ㅕ')
-              : (positive.includes(lastArr[1])
-                ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
-                : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
-              )
-            )
-          )
-        : term + (positive.includes(lastArr[1]) ? '아' : '어')
-      )
-    }
-    t.a = response
-    return t
-    */
     let temp = {}
     let res = list[Math.floor(Math.random() * list.length)]
     temp.q = m.input
@@ -289,7 +208,7 @@ const checkKeywordAndGetResponse = function (text) {
   return null
 }
 
-const mrDecisionBot = {
+export const mrDecisionBot = {
   process: function (update) {
     if (update.message === null) return null
     let message = update.message.text
@@ -303,5 +222,3 @@ const mrDecisionBot = {
     '다시 돌아온 김결정이다.\n말이 많진 않지만 결정적인 순간에 한마디 하는 성격이다.\n귀찮으니깐 웬만하면 말 걸지 마라.\n꼭 내가 결정해야겠는 일이 있으면 "김결정! 부먹 찍먹 중립" 이런 식으로 물어보도록.\n잘 부탁한다.',
   aboutText: 'https://twitter.com/MrDecision_bot',
 }
-
-module.exports = mrDecisionBot
