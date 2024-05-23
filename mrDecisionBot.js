@@ -30,12 +30,27 @@ const keywordList = [
     behavior: 'pickOne',
     parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
   },
+  { // 할까
+    keyword: /(?<!야\s?)([^\s될뭘일]+까)(?:\?|\S*$)/,
+    behavior: 'pickOne',
+    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
+  },
+  { // 일까, 인가
+    keyword: /([^\s뭐]+(?:인가|일까))(?:\?|\S*$)/,
+    behavior: 'pickOne',
+    parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
+  },
+  { // 해야/해도 될까
+    keyword: /(\S+(?:도|야))\s?(?:될|할)까(?:\?|\S*$)/,
+    behavior: 'pickOne',
+    parameter: ['(아/어)야지', ('면 안되지', '으면 안되지'), '(아/어)야 됨', ('면 안됨', '으면 안됨'), '(아/어)라', '지 마', '(아/어)도 될듯', ('면 안될듯', '으면 안될듯'), '(아/어)도 될거 같음?', '(아/어)도 되겠냐?'],
+  },
   { // 할까 (하지) 말까
     keyword: /(\S+까)\s?(\S+지)?말까(?:\?|\S*$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)', '지 마', '(아/어)라 좀', '지 말지', '자', '지 말자', '(아/어)라', '지 말어', ('려고?', '으려고?'), '(아/어)야겠냐?'],
   },
-  { // 하나 마냐
+  { // 하냐 마냐
     keyword: /(\S+냐)\s?마냐(?:\?|\S*$)/,
     behavior: 'pickOne',
     parameter: ['(아/어)', '기 싫어', ('ㄴ다', '는다'), '는건 좀..', '자', '지 말자', '(아/어)라', '고 싶진 않음', ('라고?', '으라고?'), '겠냐?'],
@@ -126,71 +141,77 @@ const ends = [
 const a = new Analyzer(verbsKor, ends)
 
 const behaviors = {
+  boolean: function () {
+
+  },
+
   pickOne: function (m, list) {
-    // let t = {}
-    // let term = m[1]
-    // if (['까', '냐'].some(end => m[1].endsWith(end))) {
-    //   term = m[1].slice(0, -1)
-    // }
-    // let bat
-    // let termNoBat = term
-    // let isTermBat = Hangul.endsWithConsonant(term)
-    // let lastArr = Hangul.d(term, true).pop()
-    // let termLastCho = isTermBat ? Hangul.a(Hangul.ds(term).slice(0, -2)) : Hangul.a(Hangul.ds(term).slice(0, -1))
-    // if (isTermBat) {
-    //   termNoBat = Hangul.a(Hangul.d(term).slice(0, -1))
-    //   bat = Hangul.d(term).pop()
-    // }
-    // let response = list[Math.floor(Math.random() * list.length)]
-    // t.q = m.input
-    // if (m[1]) {
-    //   if (!isTermBat || (lastArr[1] === 'ㅏ' && bat === 'ㄹ')) {
-    //     verb(
-    //       termNoBat + '다',
-    //       Hangul.a(
-    //         (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
-    //           ? ''
-    //           : termNoBat
-    //         ) +
-    //         (lastArr[1] === 'ㅡ'
-    //           ? Hangul.a(termLastCho + 'ㅓ')
-    //           : (lastArr[1] === 'ㅣ'
-    //             ? Hangul.a(termLastCho + 'ㅕ')
-    //             : (positive.includes(lastArr[1])
-    //               ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
-    //               : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
-    //             )
-    //           )
-    //         )
-    //       )
-    //     )
-    //   } else if ((isTermBat && bat !== 'ㄹ') || (lastArr[1] !== 'ㅏ' && bat === 'ㄹ')) {
-    //     verb(
-    //       (bat === 'ㄹ' ? termNoBat : term) + '다',
-    //       term + (positive.includes(lastArr[1]) ? '아' : '어')
-    //     )
-    //   }
-    //   // response = new Analyzer(verbs, ends).analyze(m[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
-    //   response = (bat === 'ㄹ'
-    //     ? (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
-    //         ? ''
-    //         : termNoBat
-    //       ) +
-    //       (lastArr[1] === 'ㅡ'
-    //         ? Hangul.a(termLastCho + 'ㅓ')
-    //         : (lastArr[1] === 'ㅣ'
-    //           ? Hangul.a(termLastCho + 'ㅕ')
-    //           : (positive.includes(lastArr[1])
-    //             ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
-    //             : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
-    //           )
-    //         )
-    //       )
-    //     : term + (positive.includes(lastArr[1]) ? '아' : '어')
-    //   )
-    // }
-    // t.a = response
-    // return t
+    /*
+    let t = {}
+    let term = m[1]
+    if (['까', '냐'].some(end => m[1].endsWith(end))) {
+      term = m[1].slice(0, -1)
+    }
+    let bat
+    let termNoBat = term
+    let isTermBat = Hangul.endsWithConsonant(term)
+    let lastArr = Hangul.d(term, true).pop()
+    let termLastCho = isTermBat ? Hangul.a(Hangul.ds(term).slice(0, -2)) : Hangul.a(Hangul.ds(term).slice(0, -1))
+    if (isTermBat) {
+      termNoBat = Hangul.a(Hangul.d(term).slice(0, -1))
+      bat = Hangul.d(term).pop()
+    }
+    let response = list[Math.floor(Math.random() * list.length)]
+    t.q = m.input
+    if (m[1]) {
+      if (!isTermBat || (lastArr[1] === 'ㅏ' && bat === 'ㄹ')) {
+        verb(
+          termNoBat + '다',
+          Hangul.a(
+            (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
+              ? ''
+              : termNoBat
+            ) +
+            (lastArr[1] === 'ㅡ'
+              ? Hangul.a(termLastCho + 'ㅓ')
+              : (lastArr[1] === 'ㅣ'
+                ? Hangul.a(termLastCho + 'ㅕ')
+                : (positive.includes(lastArr[1])
+                  ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
+                  : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
+                )
+              )
+            )
+          )
+        )
+      } else if ((isTermBat && bat !== 'ㄹ') || (lastArr[1] !== 'ㅏ' && bat === 'ㄹ')) {
+        verb(
+          (bat === 'ㄹ' ? termNoBat : term) + '다',
+          term + (positive.includes(lastArr[1]) ? '아' : '어')
+        )
+      }
+      // response = new Analyzer(verbs, ends).analyze(m[1])[0][0]._(list[Math.floor(Math.random() * list.length)])
+      response = (bat === 'ㄹ'
+        ? (lastArr[1] === 'ㅡ' || lastArr[1] === 'ㅣ'
+            ? ''
+            : termNoBat
+          ) +
+          (lastArr[1] === 'ㅡ'
+            ? Hangul.a(termLastCho + 'ㅓ')
+            : (lastArr[1] === 'ㅣ'
+              ? Hangul.a(termLastCho + 'ㅕ')
+              : (positive.includes(lastArr[1])
+                ? lastArr[1] === 'ㅏ' ? '' : 'ㅏ'
+                : lastArr[1] === 'ㅓ' ? '' : 'ㅓ'
+              )
+            )
+          )
+        : term + (positive.includes(lastArr[1]) ? '아' : '어')
+      )
+    }
+    t.a = response
+    return t
+    */
     let temp = {}
     let res = list[Math.floor(Math.random() * list.length)]
     temp.q = m.input
