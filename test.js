@@ -1,3 +1,3 @@
 import { mrDecisionBot } from './mrDecisionBot.js'
 
-console.log(mrDecisionBot.discord('해도되나'))
+console.log(mrDecisionBot.discord('병신인가'))
